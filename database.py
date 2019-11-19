@@ -42,11 +42,7 @@ class Database(object):
 
     def update_status(self, nodes_to_add):
         candidate_nodes_graph = self._add_nodes(graph={}, nodes_to_add=nodes_to_add)
-        check_current_invalidity = []
-
-        for (image_id, image_nodes) in self.images_graph.items():
-            if len(set(image_nodes).intersection(self.graph_set)) != len(image_nodes):
-                check_current_invalidity.append(image_id)
+        current_invalids = self.check_current_invalids(current_invalids=[])
 
         coverage_stageds = []
         for (image_id, image_nodes) in self.images_graph.items():
@@ -57,9 +53,14 @@ class Database(object):
                     coverage_stageds.append(image_id)
 
                 elif candidate_parent in image_nodes and (not (image_id in coverage_stageds)):
-                    if not (image_id in check_current_invalidity):
+                    if not (image_id in current_invalids):
                         self.images_status[image_id] = self.status_choices['granularity_staged']
 
+    def check_current_invalids(self, current_invalids):
+        for (image_id, image_nodes) in self.images_graph.items():
+            if len(set(image_nodes).intersection(self.graph_set)) != len(image_nodes):
+                current_invalids.append(image_id)
+        return current_invalids
 
 
 
