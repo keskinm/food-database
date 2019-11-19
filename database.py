@@ -32,13 +32,15 @@ class Database(object):
         return self.images_status
 
     def update_status(self, nodes_to_add):
+        coverage_stageds = []
         for (child, parent) in nodes_to_add:
             graph_childs = self.graph[parent]
             for (image_id, image_nodes) in self.images_nodes.items():
                 if set(graph_childs).intersection(image_nodes):
                     self.images_status[image_id] = self.status_choices['coverage_staged']
+                    coverage_stageds.append(image_id)
 
-                elif parent in image_nodes:
+                elif parent in image_nodes and not (image_id in coverage_stageds):
                     self.images_status[image_id] = self.status_choices['granularity_staged']
 
 
