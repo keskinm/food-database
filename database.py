@@ -19,7 +19,7 @@ class Database(object):
 
     def add_extract(self, extract):
         for (image_id, labels) in extract.items():
-            self.images_nodes.setdefault(image_id, []).append(labels)
+            self.images_nodes.setdefault(image_id, labels)
         self.update_status(extract=extract, nodes_to_add=None)
 
     def get_extract_status(self):
@@ -37,14 +37,14 @@ class Database(object):
         if nodes_to_add is not None:
             for (child, parent) in nodes_to_add:
                 pars = self.graph[parent]
-                if pars:
-                    for (image_id, image_nodes) in self.images_nodes.items():
-                        for par in pars:
-                            if par in image_nodes[0]:
-                                self.images_status[image_id] = self.status_choices['coverage_staged']
-                                continue
-                        if parent in image_nodes[0]:
-                            self.images_status[image_id] = self.status_choices['granularity_staged']
+                for (image_id, image_nodes) in self.images_nodes.items():
+                    for par in pars:
+                        if par in image_nodes:
+                            self.images_status[image_id] = self.status_choices['coverage_staged']
+                            # continue
+                    if parent in image_nodes:
+                        self.images_status[image_id] = self.status_choices['granularity_staged']
+
 
 
 
