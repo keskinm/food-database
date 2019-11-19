@@ -25,10 +25,8 @@ class Database(object):
     def build_status(self, extract):
         for (image_id, labels) in extract.items():
             self.images_status.setdefault(image_id, self.status_choices['valid'])
-            for label in labels:
-                if not (label in list(self.nodes_set)):
-                    self.images_status[image_id] = self.status_choices['invalid']
-                    break
+            if len(set(labels).intersection(self.nodes_set)) != len(labels):
+                self.images_status[image_id] = self.status_choices['invalid']
 
     def get_extract_status(self):
         return self.images_status
