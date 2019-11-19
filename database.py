@@ -36,14 +36,15 @@ class Database(object):
 
         if nodes_to_add is not None:
             for (child, parent) in nodes_to_add:
-                pars = self.graph[parent]
+                graph_childs = self.graph[parent]
                 for (image_id, image_nodes) in self.images_nodes.items():
-                    for par in pars:
-                        if par in image_nodes:
+                    for graph_child in graph_childs:
+                        if graph_child in image_nodes:
                             self.images_status[image_id] = self.status_choices['coverage_staged']
-                            # continue
-                    if parent in image_nodes:
-                        self.images_status[image_id] = self.status_choices['granularity_staged']
+                            break
+                    else:
+                        if parent in image_nodes:
+                            self.images_status[image_id] = self.status_choices['granularity_staged']
 
 
 
