@@ -37,7 +37,7 @@ class Database(object):
         for (child, parent) in nodes_to_add:
             graph_childs = self.graph[parent]
             for (image_id, image_nodes) in self.images_nodes.items():
-                if list(set(graph_childs).intersection(image_nodes)):
+                if set(graph_childs).intersection(image_nodes):
                     self.images_status[image_id] = self.status_choices['coverage_staged']
 
                 elif parent in image_nodes:
