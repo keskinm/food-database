@@ -15,8 +15,8 @@ class Database(object):
                                'coverage_staged': 'coverage_staged'}
 
     def add_nodes(self, nodes_to_add):
+        self._add_nodes(self.graph, nodes_to_add)
         for (child, parent) in nodes_to_add:
-            self.graph.setdefault(parent, []).append(child)
             self.graph_set.add(child)
         self.update_status(nodes_to_add)
 
@@ -35,14 +35,13 @@ class Database(object):
         return self.images_status
 
     @staticmethod
-    def build_candidate_nodes(nodes_to_add):
-        candidate_nodes_graph = {}
+    def _add_nodes(graph, nodes_to_add):
         for (child, parent) in nodes_to_add:
-            candidate_nodes_graph.setdefault(parent, []).append(child)
-        return candidate_nodes_graph
+            graph.setdefault(parent, []).append(child)
+        return graph
 
     def update_status(self, nodes_to_add):
-        candidate_nodes_graph = self.build_candidate_nodes(nodes_to_add)
+        candidate_nodes_graph = self._add_nodes(graph={}, nodes_to_add=nodes_to_add)
         check_current_invalidity = []
 
         for (image_id, image_nodes) in self.images_graph.items():
