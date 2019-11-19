@@ -40,9 +40,8 @@ class Database(object):
                 if list(set(graph_childs).intersection(image_nodes)):
                     self.images_status[image_id] = self.status_choices['coverage_staged']
 
-                else:
-                    if parent in image_nodes:
-                        self.images_status[image_id] = self.status_choices['granularity_staged']
+                elif parent in image_nodes:
+                    self.images_status[image_id] = self.status_choices['granularity_staged']
 
 
 
