@@ -8,7 +8,8 @@ class Database(object):
         self.graph = {core: []}
         self.images_nodes = {}
         self.images_status = {}
-        self.status_choices = {'invalid': 'invalid', 'valid': 'valid', 'granularity_staged': 'granularity_staged', 'coverage_staged': 'coverage_staged'}
+        self.status_choices = {'invalid': 'invalid', 'valid': 'valid', 'granularity_staged': 'granularity_staged',
+                               'coverage_staged': 'coverage_staged'}
         self.nodes_set = set([])
 
     def add_nodes(self, nodes_to_add):
@@ -36,7 +37,7 @@ class Database(object):
         for (child, parent) in nodes_to_add:
             graph_childs = self.graph[parent]
             for (image_id, image_nodes) in self.images_nodes.items():
-                if set(graph_childs).intersection(image_nodes):
+                if set(graph_childs).intersection(image_nodes) and self.images_status[image_id] != self.status_choices['invalid']:
                     self.images_status[image_id] = self.status_choices['coverage_staged']
                     coverage_stageds.append(image_id)
 
