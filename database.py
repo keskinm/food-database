@@ -26,7 +26,10 @@ class Database(object):
 	def update_status(self, extract, nodes_to_add):
 		if extract is not None:
 			for (image_id, labels) in extract.items():
-				self.images_status.setdefault(image_id, []).append(self.status_choices['valid'])
+				if labels in self.graph.keys():
+					self.images_status.setdefault(image_id, self.status_choices['valid'])
+				else:
+					self.images_status.setdefault(image_id, self.status_choices['invalid'])
 
 		if nodes_to_add is not None:
 			for (child, parent) in nodes_to_add:
@@ -34,4 +37,5 @@ class Database(object):
 					for (image_id, image_nodes) in self.images_nodes.items():
 						if [parent] in image_nodes:
 							self.images_status[image_id] = self.status_choices['granularity_staged']
+
 
