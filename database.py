@@ -15,36 +15,35 @@ class Database(object):
         for (child, parent) in nodes_to_add:
             self.graph.setdefault(parent, []).append(child)
             self.nodes_set.add(child)
-        self.update_status(nodes_to_add=nodes_to_add, extract=None)
+        self.update_status(nodes_to_add)
 
     def add_extract(self, extract):
         for (image_id, labels) in extract.items():
             self.images_nodes.setdefault(image_id, labels)
-        self.update_status(extract=extract, nodes_to_add=None)
+        self.build_status(extract)
+
+    def build_status(self, extract):
+        for (image_id, labels) in extract.items():
+            self.images_status.setdefault(image_id, self.status_choices['valid'])
+            for label in labels:
+                if not (label in list(self.nodes_set)):
+                    self.images_status[image_id] = self.status_choices['invalid']
+                    break
 
     def get_extract_status(self):
         return self.images_status
 
-    def update_status(self, extract, nodes_to_add):
-        if extract is not None:
-            for (image_id, labels) in extract.items():
-                self.images_status.setdefault(image_id, self.status_choices['valid'])
-                for label in labels:
-                    if not (label in list(self.nodes_set)):
-                        self.images_status[image_id] = self.status_choices['invalid']
+    def update_status(self, nodes_to_add):
+        for (child, parent) in nodes_to_add:
+            graph_childs = self.graph[parent]
+            for (image_id, image_nodes) in self.images_nodes.items():
+                for graph_child in graph_childs:
+                    if graph_child in image_nodes:
+                        self.images_status[image_id] = self.status_choices['coverage_staged']
                         break
-
-        if nodes_to_add is not None:
-            for (child, parent) in nodes_to_add:
-                graph_childs = self.graph[parent]
-                for (image_id, image_nodes) in self.images_nodes.items():
-                    for graph_child in graph_childs:
-                        if graph_child in image_nodes:
-                            self.images_status[image_id] = self.status_choices['coverage_staged']
-                            break
-                    else:
-                        if parent in image_nodes:
-                            self.images_status[image_id] = self.status_choices['granularity_staged']
+                else:
+                    if parent in image_nodes:
+                        self.images_status[image_id] = self.status_choices['granularity_staged']
 
 
 
