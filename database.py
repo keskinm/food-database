@@ -33,9 +33,9 @@ class Database(object):
 
 		if nodes_to_add is not None:
 			for (child, parent) in nodes_to_add:
-				if parent in self.graph:
-					for (image_id, image_nodes) in self.images_nodes.items():
-						if [parent] in image_nodes:
-							self.images_status[image_id] = self.status_choices['granularity_staged']
+				for (image_id, image_nodes) in self.images_nodes.items():
+					if parent in image_nodes[0]:
+						self.images_status[image_id] = self.status_choices['granularity_staged']
+
 
 
